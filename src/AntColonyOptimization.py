@@ -31,15 +31,16 @@ class AntColonyOptimization:
     # @return ACO optimized route
     def find_shortest_route(self, path_specification):
         self.maze.reset()
+        rho = 0.6
         for gen in range(0, self.generations):
             routes = []
-            self.maze.evaporate
+            self.maze.evaporate(self, rho)
             a = 0
             while a < self.ants_per_gen:
                 ant = (self, self.maze, path_specification)
                 routes.append(ant.find_route())
                 a = a+1
-            self.maze.add_pheromones_route(self, routes, self.q)
+            self.maze.add_pheromone_routes(self, routes, self.q)
         # for pheromones in self.maze.get_pheromone():
         #     max_pheromones = 0
         #     if pheromones > max_pheromones:
