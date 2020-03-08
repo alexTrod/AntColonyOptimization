@@ -50,7 +50,7 @@ class Maze:
             self.pheromones[cur.x+1][cur.y].west += to_add
             self.pheromones[cur.x][cur.y+1].east += to_add
             print(route.get_route())
-            cur = cur.add_direction(route.get_route())
+            #cur = cur.add_direction(route.get_route())
             i += 1
 
 

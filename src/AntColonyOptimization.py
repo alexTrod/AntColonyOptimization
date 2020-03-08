@@ -58,6 +58,7 @@ if __name__ == "__main__":
     # construct the optimization objects
     maze = Maze.create_maze("./../data/hard maze.txt")
     spec = PathSpecification.read_coordinates("./../data/hard coordinates.txt")
+
     aco = AntColonyOptimization(maze, gen, no_gen, q, evap)
 
     # save starting time
