@@ -19,7 +19,7 @@ class Maze:
         self.width = width
         self.start = None
         self.end = None
-        self.pheromones = [width][length]
+        self.pheromones = [[0 for x in range(width)] for y in range(length)]
         self.initialize_pheromones()
 
     # Initialize pheromones to a start value.
@@ -27,15 +27,13 @@ class Maze:
         initial_p = SP(0, 0, 0, 0)
         for i in range(self.get_width()):
             for j in range(self.get_length()):
-                self.pheromones[i, j] = initial_p
+                self.pheromones[i][j] = initial_p
         #return
     # Reset the maze for a new shortest path problem.
     def reset(self):
         self.initialize_pheromones()
 
-    def add_pheromone(self, cur, other):
-        return [cur.get(0) + other.get(0), cur.get(1) + other.get(1), cur.get(2) + other.get(2), other.get(3) + cur.get(3)]
-    # Update the pheromones along a certain route according to a certain Q
+      # Update the pheromones along a certain route according to a certain Q
     # @param r The route of the ants
     # @param Q Normalization factor for amount of dropped pheromone
     def add_pheromone_route(self, route, q):
@@ -43,13 +41,15 @@ class Maze:
         route = route.get_route()
         i = 0
         while True:
-            to_add = [] #TODO: replace with actual formula
 
-            self.pheromones[cur.x][cur.y] = self.add_pheromones(self.pheromones[cur.x][cur.y], to_add)
-
+            # update neighboring pheromones of the neighboring positions
+            to_add = q/route.size()
+            self.pheromones[cur.x-1][cur.y] = self.pheromones[cur.x-1][cur.y].get(0) + to_add
+            self.pheromones[cur.x][cur.y-1] = self.pheromones[cur.x][cur.y-1].get(1) + to_add
+            self.pheromones[cur.x+1][cur.y] = self.pheromones[cur.x+1][cur.y].get(2) + to_add
+            self.pheromones[cur.x][cur.y+1] = self.pheromones[cur.x][cur.y+1].get(3) + to_add
             cur = cur.add_direction(route[i])
             i += 1
-
 
      # Update pheromones for a list of routes
      # @param routes A list of routes
@@ -79,7 +79,8 @@ class Maze:
     # @param position The position to check the neighbours of.
     # @return the pheromones of the neighbouring positions.
     def get_surrounding_pheromone(self, position):
-        return None
+        return self.pheromones[position.get_x()][position.get_y()]
+        #check type of position
 
     # Pheromone getter for a specific position. If the position is not in bounds returns 0
     # @param pos Position coordinate
