@@ -31,9 +31,11 @@ class AntColonyOptimization:
     # @param spec Spefication of the route we wish to optimize
     # @return ACO optimized route
     def find_shortest_route(self, path_specification):
+        self.maze.reset()
+        rho = 0.6
         for gen in range(0, self.generations):
             routes = Route(path_specification.get_start())
-            self.maze.evaporate(0.8)
+            self.maze.evaporate(rho)
             a = 0
             while a < self.ants_per_gen:
                 ant = Ant(self.maze, path_specification)
