@@ -2,6 +2,8 @@ import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import traceback
+from src.SurroundingPheromone import SurroundingPheromone as SP
+from src.Coordinate import Coordinate as Coordinate
 
 # Class that holds all the maze data. This means the pheromones, the open and blocked tiles in the system as
 # well as the starting and end coordinates.
@@ -17,21 +19,37 @@ class Maze:
         self.width = width
         self.start = None
         self.end = None
+        self.pheromones = [width][length]
         self.initialize_pheromones()
 
     # Initialize pheromones to a start value.
     def initialize_pheromones(self):
-        return
-
+        initial_p = SP(0, 0, 0, 0)
+        for i in range(self.get_width()):
+            for j in range(self.get_length()):
+                self.pheromones[i, j] = initial_p
+        #return
     # Reset the maze for a new shortest path problem.
     def reset(self):
         self.initialize_pheromones()
 
+    def add_pheromone(self, cur, other):
+        return [cur.get(0) + other.get(0), cur.get(1) + other.get(1), cur.get(2) + other.get(2), other.get(3) + cur.get(3)]
     # Update the pheromones along a certain route according to a certain Q
     # @param r The route of the ants
     # @param Q Normalization factor for amount of dropped pheromone
     def add_pheromone_route(self, route, q):
-        return
+        cur = route.get_start()
+        route = route.get_route()
+        i = 0
+        while True:
+            to_add = [] #TODO: replace with actual formula
+
+            self.pheromones[cur.x][cur.y] = self.add_pheromones(self.pheromones[cur.x][cur.y], to_add)
+
+            cur = cur.add_direction(route[i])
+            i += 1
+
 
      # Update pheromones for a list of routes
      # @param routes A list of routes
@@ -65,7 +83,12 @@ class Maze:
     # @param pos Position coordinate
     # @return pheromone at point
     def get_pheromone(self, pos):
-        return 0
+        amount_p = SP.get(pos)
+        if self.in_bounds(amount_p):
+            return amount_p
+        else:
+            return 0
+
 
     # Check whether a coordinate lies in the current maze.
     # @param position The position to be checked
