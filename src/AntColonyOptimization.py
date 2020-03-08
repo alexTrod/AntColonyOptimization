@@ -7,7 +7,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import time
 from src.Maze import Maze
 from src.PathSpecification import PathSpecification
-
+from src.Ant import Ant
+from src.Route import Route
 
 # Class representing the first assignment. Finds shortest path between two points in a maze according to a specific
 # path specification.
@@ -33,19 +34,19 @@ class AntColonyOptimization:
         self.maze.reset()
         rho = 0.6
         for gen in range(0, self.generations):
-            routes = []
-            self.maze.evaporate(self, rho)
+            routes = Route(path_specification.get_start())
+            self.maze.evaporate(rho)
             a = 0
             while a < self.ants_per_gen:
-                ant = (self, self.maze, path_specification)
-                routes.append(ant.find_route())
-                a = a+1
-            self.maze.add_pheromone_routes(self, routes, self.q)
-        # for pheromones in self.maze.get_pheromone():
-        #     max_pheromones = 0
-        #     if pheromones > max_pheromones:
-        #         max_pheromones = pheromones
-        return Ant(self, self.maze, path_specification).find_route()
+                ant = Ant(self.maze, path_specification)
+                routes.add(ant.find_route())
+                a = a + 1
+            self.maze.add_pheromone_routes(routes.get_route(), self.q)
+            # for pheromones in self.maze.get_pheromone():
+            #     max_pheromones = 0
+            #     if pheromones > max_pheromones:
+            #         max_pheromones = pheromones
+        return Ant(self.maze, path_specification).find_route()
 
 
 # Driver function for Assignment 1

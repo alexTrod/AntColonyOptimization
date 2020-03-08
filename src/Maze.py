@@ -24,10 +24,9 @@ class Maze:
 
     # Initialize pheromones to a start value.
     def initialize_pheromones(self):
-        initial_p = SP(0, 0, 0, 0)
         for i in range(self.get_width()):
             for j in range(self.get_length()):
-                self.pheromones[i][j] = initial_p
+                self.pheromones[i][j] = SP(0, 0, 0, 0)
         #return
     # Reset the maze for a new shortest path problem.
     def reset(self):
@@ -38,18 +37,22 @@ class Maze:
     # @param Q Normalization factor for amount of dropped pheromone
     def add_pheromone_route(self, route, q):
         cur = route.get_start()
-        route = route.get_route()
+        _route = route.get_route()
         i = 0
-        while True:
+        while i < 5:
+            to_add = [] #TODO: replace with actual formula
 
             # update neighboring pheromones of the neighboring positions
-            to_add = q/route.size()
-            self.pheromones[cur.x-1][cur.y] = self.pheromones[cur.x-1][cur.y].get(0) + to_add
-            self.pheromones[cur.x][cur.y-1] = self.pheromones[cur.x][cur.y-1].get(1) + to_add
-            self.pheromones[cur.x+1][cur.y] = self.pheromones[cur.x+1][cur.y].get(2) + to_add
-            self.pheromones[cur.x][cur.y+1] = self.pheromones[cur.x][cur.y+1].get(3) + to_add
-            cur = cur.add_direction(route[i])
+            to_add = q/max(0.001, route.size())
+
+            self.pheromones[cur.x-1][cur.y].north += to_add
+            self.pheromones[cur.x][cur.y-1].south += to_add
+            self.pheromones[cur.x+1][cur.y].west += to_add
+            self.pheromones[cur.x][cur.y+1].east += to_add
+            print(route.get_route())
+            cur = cur.add_direction(route.get_route())
             i += 1
+
 
      # Update pheromones for a list of routes
      # @param routes A list of routes
@@ -80,7 +83,6 @@ class Maze:
     # @return the pheromones of the neighbouring positions.
     def get_surrounding_pheromone(self, position):
         return self.pheromones[position.get_x()][position.get_y()]
-        #check type of position
 
     # Pheromone getter for a specific position. If the position is not in bounds returns 0
     # @param pos Position coordinate
