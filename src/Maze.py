@@ -19,7 +19,7 @@ class Maze:
         self.width = width
         self.start = None
         self.end = None
-        self.pheromones = [width][length]
+        self.pheromones = [[0 for x in range(width)] for y in range(length)]
         self.initialize_pheromones()
 
     # Initialize pheromones to a start value.
@@ -27,7 +27,7 @@ class Maze:
         initial_p = SP(0, 0, 0, 0)
         for i in range(self.get_width()):
             for j in range(self.get_length()):
-                self.pheromones[i, j] = initial_p
+                self.pheromones[i][j] = initial_p
         #return
     # Reset the maze for a new shortest path problem.
     def reset(self):
