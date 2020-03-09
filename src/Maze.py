@@ -38,19 +38,17 @@ class Maze:
     def add_pheromone_route(self, route, q):
         cur = route.get_start()
         _route = route.get_route()
-        i = 0
-        while i < 5:
-            to_add = [] #TODO: replace with actual formula
+        i = 1
+        while i < len(_route):
 
             # update neighboring pheromones of the neighboring positions
-            to_add = q/max(0.001, route.size())
+            to_add = q/route.size()
 
             self.pheromones[cur.x-1][cur.y].north += to_add
             self.pheromones[cur.x][cur.y-1].south += to_add
             self.pheromones[cur.x+1][cur.y].west += to_add
             self.pheromones[cur.x][cur.y+1].east += to_add
-            print(route.get_route())
-            #cur = cur.add_direction(route.get_route())
+            cur = _route[i]
             i += 1
 
 
@@ -66,7 +64,9 @@ class Maze:
     def evaporate(self, rho):
         for i in range(self.get_length()):
             for j in range(self.get_width()):
-                self.pheromones[i][j] = self.pheromones[i][j] * (1 - rho)
+                param = (1-rho)
+                old_p = self.pheromones[i][j]
+                self.pheromones[i][j] = SP(old_p.north * param, old_p.south * param, old_p.east*param, old_p.west*param)
 
     # Width getter
     # @return width of the maze
