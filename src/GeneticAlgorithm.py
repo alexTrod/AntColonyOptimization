@@ -17,7 +17,8 @@ class GeneticAlgorithm:
 
      # Knuth-Yates shuffle, reordering a array randomly
      # @param chromosome array to shuffle.
-    def shuffle(self, chromosome):
+    @staticmethod
+    def shuffle(chromosome):
         n = len(chromosome)
         for i in range(n):
             r = i + int(random.uniform(0, 1) * (n - i))
@@ -32,7 +33,7 @@ class GeneticAlgorithm:
     def solve_tsp(self, tsp_data : TSPData):
         chromosome = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17]
         N = 25
-        Pm= 0.1
+        Pm = 0.1
         x = []    #List of chromosomes
 
         for i in range(N):
@@ -40,13 +41,13 @@ class GeneticAlgorithm:
 
         distances = tsp_data.get_distances()
 
-
-        iter = 0
+        iteration = 0
         fitness_list = []  # intiialized to be usable in the end
         max_iterations = 100
         done = False
+
         while not done:
-            iter +=1
+            iteration += 1
             new_population = []
             population = x
             num = N
@@ -78,17 +79,18 @@ class GeneticAlgorithm:
 
         return x[np.argmin(fitness)]
 
-
-    def roulette(self, population, fitness_list, N):
+    @staticmethod
+    def roulette(population, fitness_list, N):
         total_fitness = float(sum(fitness_list))
-        rel_fitness = [f / total_fitness for f in fitness_list]
+        relative_fitness = [f / total_fitness for f in fitness_list]
         # Generate probability intervals for each individual
-        probs = [sum(rel_fitness[:i + 1]) for i in range(len(rel_fitness))]
+        probs = [sum(relative_fitness[:i + 1]) for i in range(len(relative_fitness))]
         # Draw new population
 
-        N_pairs = []
+        new_pairs = []
+        n = 0
 
-        for n in range(N):
+        while n < N:
             pair = []
             r = random.random()
 
@@ -102,23 +104,26 @@ class GeneticAlgorithm:
                 if r <= probs[i]:
                     pair.append(individual)
                     break
-            N_pairs.append(pair)
 
-        return N_pairs
+            new_pairs.append(pair)
+            n += 1
+        return new_pairs
 
-    def calculate_fitness(self, x, N, distances):
+    @staticmethod
+    def calculate_fitness(x, N, distances):
         fitness_list = []
 
         for i in range(N):
             chromosome = x[i]
             for index in range(len(chromosome)-1):
-                # add distance from start to l[0]
-                # add distance l[18] to end
+                # TODO add distance from start to l[0]
+                # TODO add distance l[18] to end
                 fitness_list[i] += 1 / distances[chromosome[index]][chromosome[index + 1]]
 
         return fitness_list
 
-    def mutate(self, chromosome):
+    @staticmethod
+    def mutate(chromosome):
         r = int(random.randrange(0, 17))
         r1 = int(random.randrange(0, 17))
 
@@ -127,7 +132,8 @@ class GeneticAlgorithm:
             chromosome[r] = chromosome[r1]
             chromosome[r1] = temp
 
-    def cross_over(self, parent1, parent2):
+    @staticmethod
+    def cross_over(parent1, parent2):
 
         # 0-5 parent1 13-17 parent1 else parent2 offspring 2 will be the opposite
 
@@ -138,7 +144,7 @@ class GeneticAlgorithm:
             offspring1[i] = -1
             offspring2[i] = -1
 
-        for i in range(6,12):
+        for i in range(6, 12):
             if parent2[i] not in offspring1:
                 offspring1[i] = parent2[i]
             else:
