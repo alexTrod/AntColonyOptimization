@@ -42,10 +42,6 @@ class AntColonyOptimization:
                 routes.add(ant.find_route())
                 a = a + 1
             self.maze.add_pheromone_routes(routes.get_route(), self.q)
-            # for pheromones in self.maze.get_pheromone():
-            #     max_pheromones = 0
-            #     if pheromones > max_pheromones:
-            #         max_pheromones = pheromones
         return Ant(self.maze, path_specification).find_route()
 
 
@@ -58,8 +54,8 @@ if __name__ == "__main__":
     evap = 0.1
 
     # construct the optimization objects
-    maze = Maze.create_maze("./../data/hard maze.txt")
-    spec = PathSpecification.read_coordinates("./../data/hard coordinates.txt")
+    maze = Maze.create_maze("./../data/easy maze.txt")
+    spec = PathSpecification.read_coordinates("./../data/easy coordinates.txt")
 
     aco = AntColonyOptimization(maze, gen, no_gen, q, evap)
 

@@ -20,35 +20,42 @@ class Maze:
         self.start = None
         self.end = None
         self.pheromones = [[0 for x in range(width)] for y in range(length)]
+        print(self.pheromones)
         self.initialize_pheromones()
 
     # Initialize pheromones to a start value.
     def initialize_pheromones(self):
-        for i in range(self.get_width()):
-            for j in range(self.get_length()):
+        for i in range(self.get_length()):
+            for j in range(self.get_width()):
                 self.pheromones[i][j] = SP(0, 0, 0, 0)
-        #return
+
     # Reset the maze for a new shortest path problem.
     def reset(self):
         self.initialize_pheromones()
 
-      # Update the pheromones along a certain route according to a certain Q
+    # Update the pheromones along a certain route according to a certain Q
     # @param r The route of the ants
     # @param Q Normalization factor for amount of dropped pheromone
     def add_pheromone_route(self, route, q):
+        print('Adding pheromones : ')
         cur = route.get_start()
         _route = route.get_route()
-        i = 1
+        i = 0
+        print('width : ', self.width)
+        print('length : ', self.length)
         while i < len(_route):
 
             # update neighboring pheromones of the neighboring positions
             to_add = q/route.size()
-
-            self.pheromones[cur.x-1][cur.y].north += to_add
-            self.pheromones[cur.x][cur.y-1].south += to_add
-            self.pheromones[cur.x+1][cur.y].west += to_add
-            self.pheromones[cur.x][cur.y+1].east += to_add
-            cur = _route[i]
+            if 0 < cur.y:
+                self.pheromones[cur.y-1][cur.x].north += to_add
+            if 0 < cur.x:
+                self.pheromones[cur.y][cur.x-1].east += to_add
+            if cur.y + 1 <= self.length - 1:
+                self.pheromones[cur.y+1][cur.x].south += to_add
+            if cur.x + 1 <= self.width - 1:
+                self.pheromones[cur.y][cur.x+1].west += to_add
+            cur = cur.add_direction(_route[i])
             i += 1
 
 
