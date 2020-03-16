@@ -48,8 +48,8 @@ class Maze:
 
             # update neighboring pheromones of the neighboring positions
             cur = cur.add_direction(_route[i])
-            if self.maze_check(self, cur):
-                self.pheromones[cur.get_x()][cur.get_y] += to_add
+            if self.maze_check(cur):
+                self.pheromones[cur.get_x()][cur.get_y()] += to_add
 
             i += 1
 

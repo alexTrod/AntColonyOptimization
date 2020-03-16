@@ -13,8 +13,9 @@ class Ant:
     # Constructor for ant taking a Maze and PathSpecification.
     # @param maze Maze the ant will be running in.
     # @param spec The path specification consisting of a start coordinate and an end coordinate.
-    def __init__(self, maze, path_specification):
+    def __init__(self, maze, path_specification, iter):
         self.maze = maze
+        self.iter = iter
         self.start = path_specification.get_start()
         self.end = path_specification.get_end()
         self.current_position = self.start
@@ -30,8 +31,10 @@ class Ant:
 
         route = Route(self.start)
         pos_checked = [[False for y in range(self.maze.get_length())] for x in range(self.maze.get_width())]
+        iterations = 0
 
-        while self.current_position != self.end:
+        while (self.current_position != self.end) and iterations < self.iter:
+            iterations += 1
             chance = random.uniform(0, 1)
             pie_slice = 0
             total_pher = 0
@@ -45,44 +48,38 @@ class Ant:
             print('I am there : ', self.current_position)
             pos_checked[self.current_position.get_x()][self.current_position.get_y()] = True
             directions = []
+            pheromones = []
 
             if self.maze.maze_check(north_dir):
                 if not pos_checked[north_dir.get_x()][north_dir.get_y()]:
                     direc = sp.get(north)
                     total_pher += direc
-                    print("north", north)
+                    pheromones.append(direc)
                     directions.append(north)
 
             if self.maze.maze_check(south_dir):
                 if not pos_checked[south_dir.get_x()][south_dir.get_y()]:
                     direc = sp.get(south)
                     total_pher += direc
-                    print("south", south)
+                    pheromones.append(direc)
                     directions.append(south)
 
             if  self.maze.maze_check(east_dir):
                 if not pos_checked[east_dir.get_x()][east_dir.get_y()]:
                     direc = sp.get(east)
                     total_pher += direc
-                    print("east", east)
+                    pheromones.append(direc)
                     directions.append(east)
 
             if  self.maze.maze_check(west_dir):
                 if not pos_checked[west_dir.get_x()][west_dir.get_y()]:
                     direc = sp.get(west)
                     total_pher += direc
-                    print("west",west)
+                    pheromones.append(direc)
                     directions.append(west)
 
-            if len(directions) > 0:
-                for dirs in directions:
-                    print("crazy" ,dirs)
-                    pie_slice += sp.get(dirs) / total_pher
-                    if chance <= pie_slice:
-                        self.current_position = self.current_position.add_direction(dirs)
-                        route.add(dirs)
-                        break
-            else:
+            print("DIRECTIONS: ", directions)
+            if len(pheromones) == 0:
                 prev_dir = route.remove_last()
                 if prev_dir == north:
                     back_dir = south
@@ -91,8 +88,16 @@ class Ant:
                 if prev_dir == east:
                     back_dir = west
                 if prev_dir == west:
-                    back_dir = west
-                print("HIII")
+                    back_dir = east
                 self.current_position = self.current_position.add_direction(back_dir)
+            else:
+                for i in range(len(pheromones)):
+                    print(directions[i])
+                    pie_slice += pheromones[i] / total_pher
+                    if chance <= pie_slice:
+                        self.current_position = self.current_position.add_direction(directions[i])
+                        route.add(directions[i])
+                        break
+
 
         return route
