@@ -50,6 +50,9 @@ class Ant:
             directions = []
             pheromones = []
 
+            # Checks if it is possible to go a certain direction.
+            # If possible the pheromone in that direction is found.
+            # The direction and pheromone are both added to the list.
             if self.maze.maze_check(north_dir):
                 if not pos_checked[north_dir.get_x()][north_dir.get_y()]:
                     direc = sp.get(north)
@@ -79,6 +82,8 @@ class Ant:
                     directions.append(west)
 
             print("DIRECTIONS: ", directions)
+            # If no pheromones are available because there is a dead end or the ant has already been somewhere.
+            # A step back is taken.
             if len(pheromones) == 0:
                 prev_dir = route.remove_last()
                 if prev_dir == north:
@@ -90,6 +95,10 @@ class Ant:
                 if prev_dir == west:
                     back_dir = east
                 self.current_position = self.current_position.add_direction(back_dir)
+
+            # If there is a direction the ant can go.
+            # The pheromone percentage is calculated and by chance the end chooses
+            # one of the available directions
             else:
                 for i in range(len(pheromones)):
                     print(directions[i])
@@ -99,5 +108,5 @@ class Ant:
                         route.add(directions[i])
                         break
 
-
+        # Return the route found.
         return route

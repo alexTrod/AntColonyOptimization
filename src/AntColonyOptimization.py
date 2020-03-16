@@ -55,7 +55,7 @@ class AntColonyOptimization:
 if __name__ == "__main__":
     # parameters
     iterations = 10000
-    gen = 20
+    gen = 30
     no_gen = 20
     q = 1600
     evap = 0.1

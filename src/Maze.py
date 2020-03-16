@@ -5,7 +5,6 @@ from src.Direction import Direction
 
 import traceback
 from src.SurroundingPheromone import SurroundingPheromone as SP
-from src.Coordinate import Coordinate as Coordinate
 
 
 # Class that holds all the maze data. This means the pheromones, the open and blocked tiles in the system as
@@ -37,10 +36,9 @@ class Maze:
     # @param r The route of the ants
     # @param Q Normalization factor for amount of dropped pheromone
     def add_pheromone_route(self, route, q):
-        print('Adding pheromones : ')
+        print('Adding pheromones')
         cur = route.get_start()
         _route = route.get_route()
-        print(_route)
         to_add = q / route.size()
 
         i = 0
