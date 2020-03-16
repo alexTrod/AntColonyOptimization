@@ -1,10 +1,9 @@
 import os, sys
 
-from src.Ant import Ant
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import time
+import math
 from src.Maze import Maze
 from src.PathSpecification import PathSpecification
 from src.Ant import Ant
@@ -32,17 +31,24 @@ class AntColonyOptimization:
     # @return ACO optimized route
     def find_shortest_route(self, path_specification):
         self.maze.reset()
-        rho = 0.6
+        route = float('nan')
+
         for gen in range(0, self.generations):
-            routes = Route(path_specification.get_start())
-            self.maze.evaporate(rho)
             a = 0
+            routes = []
             while a < self.ants_per_gen:
                 ant = Ant(self.maze, path_specification)
-                routes.add(ant.find_route())
+                new_route = ant.find_route()
+                routes.append(new_route)
+                if math.isnan(route):
+                    route = new_route
+
+                if new_route.shorter_than(self, route):
+                    route = new_route
                 a = a + 1
-            self.maze.add_pheromone_routes(routes.get_route(), self.q)
-        return Ant(self.maze, path_specification).find_route()
+            self.maze.add_pheromone_routes(routes, self.q)
+            self.maze.evaporate(self.evaporation)
+        return route
 
 
 # Driver function for Assignment 1
@@ -69,7 +75,7 @@ if __name__ == "__main__":
     print("Time taken: " + str((int(round(time.time() * 1000)) - start_time) / 1000.0))
 
     # save solution
-    shortest_route.write_to_file("./../data/hard_solution.txt")
+    shortest_route.write_to_file("./../data/easy_solution.txt")
 
     # print route size
     print("Route size: " + str(shortest_route.size()))

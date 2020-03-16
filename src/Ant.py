@@ -1,4 +1,5 @@
 import os, sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import random
@@ -22,65 +23,76 @@ class Ant:
     # Method that performs a single run through the maze by the ant.
     # @return The route the ant found through the maze.
     def find_route(self):
-        #TODO: check for walls
+        north = Direction.north
+        south = Direction.south
+        east = Direction.east
+        west = Direction.west
+
         route = Route(self.start)
-        pheromones = self.maze.pheromones
-        iterations = 0
+        pos_checked = [[False for y in range(self.maze.get_length())] for x in range(self.maze.get_width())]
+
         while self.current_position != self.end:
-            print('--')
-            print('I am there : ', self.current_position)
-            north = Direction.north
-            south = Direction.south
-            east = Direction.east
-            west = Direction.west
+            chance = random.uniform(0, 1)
+            pie_slice = 0
+            total_pher = 0
+            sp = self.maze.get_surrounding_pheromone(self.current_position)
 
             north_dir = self.current_position.add_direction(north)
             south_dir = self.current_position.add_direction(south)
             east_dir = self.current_position.add_direction(east)
             west_dir = self.current_position.add_direction(west)
+            print('--')
+            print('I am there : ', self.current_position)
+            pos_checked[self.current_position.get_x()][self.current_position.get_y()] = True
+            directions = []
 
-            directions = [north_dir, south_dir, east_dir, west_dir]
-            share_p = []
-            directions_p = []
-            for i in range(4):
-                if directions[i].x_between(0, self.maze.get_width()) and directions[i].y_between(0, self.maze.get_length()):
+            if self.maze.maze_check(north_dir):
+                if not pos_checked[north_dir.get_x()][north_dir.get_y()]:
+                    direc = sp.get(north)
+                    total_pher += direc
+                    print("north", north)
+                    directions.append(north)
 
-                    share_p.append(pheromones[directions[i].get_y()][directions[i].get_x()])
-                    if i == 0:
-                        share_p[-1] = share_p[-1].get(Direction.south)
-                        directions_p.append(north)
-                    elif i == 1:
-                        share_p[-1] = share_p[-1].get(Direction.north)
-                        directions_p.append(south)
-                    elif i == 2:
-                        share_p[-1] = share_p[-1].get(Direction.west)
-                        directions_p.append(east)
-                    elif i == 3:
-                        share_p[-1] = share_p[-1].get(Direction.east)
-                        directions_p.append(west)
-                    else:
-                        raise ArithmeticError
-            total_p = sum(share_p) if sum(share_p) > 0 else 1
-            #print('directions : ', directions_p)
+            if self.maze.maze_check(south_dir):
+                if not pos_checked[south_dir.get_x()][south_dir.get_y()]:
+                    direc = sp.get(south)
+                    total_pher += direc
+                    print("south", south)
+                    directions.append(south)
 
-            # if no pheromones :
-            if sum(share_p) == 0:
-                share_p = [1/len(share_p) for x in range(len(share_p))]
+            if  self.maze.maze_check(east_dir):
+                if not pos_checked[east_dir.get_x()][east_dir.get_y()]:
+                    direc = sp.get(east)
+                    total_pher += direc
+                    print("east", east)
+                    directions.append(east)
 
-            end_share_p = [0 for x in range(len(share_p))]
-            share_p = list(map(lambda x: x/total_p, share_p))
-            for i in range(len(share_p)):
-                 end_share_p[i] = sum(share_p[0:i+1])
-            #print('pheromones : ', end_share_p)
-            #TODO: map with the sum of the last cells
-            ran_number = self.rand.uniform(0, 1)
-            for i in range(len(end_share_p)):
-                if ran_number <= end_share_p[i]:
-                    self.current_position = self.current_position.add_direction(directions_p[i])
-                    route.add(directions_p[i])
-                    #print(directions_p[i])
-                    #print('going that way : ', directions_p[i])
-                    break
-            iterations += 1
-        #print(route.get_route())
+            if  self.maze.maze_check(west_dir):
+                if not pos_checked[west_dir.get_x()][west_dir.get_y()]:
+                    direc = sp.get(west)
+                    total_pher += direc
+                    print("west",west)
+                    directions.append(west)
+
+            if len(directions) > 0:
+                for dirs in directions:
+                    print("crazy" ,dirs)
+                    pie_slice += sp.get(dirs) / total_pher
+                    if chance <= pie_slice:
+                        self.current_position = self.current_position.add_direction(dirs)
+                        route.add(dirs)
+                        break
+            else:
+                prev_dir = route.remove_last()
+                if prev_dir == north:
+                    back_dir = south
+                if prev_dir == south:
+                    back_dir = north
+                if prev_dir == east:
+                    back_dir = west
+                if prev_dir == west:
+                    back_dir = west
+                print("HIII")
+                self.current_position = self.current_position.add_direction(back_dir)
+
         return route
