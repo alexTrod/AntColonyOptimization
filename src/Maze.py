@@ -160,12 +160,3 @@ class Maze:
         if self.in_bounds(pos) and self.walls[pos.get_x()][pos.get_y()] != 0:
             return True
         return False
-
-    def get_possible_directions(self, position):
-        possible_directions = []
-        for dir in Direction:
-            if self.in_bounds(position.add_direction(dir)) and self.walls[position.add_direction(dir).get_x()][
-                position.add_direction(dir).get_y()] != 0:
-                possible_directions.append(dir)
-        print(possible_directions)
-        return possible_directions
